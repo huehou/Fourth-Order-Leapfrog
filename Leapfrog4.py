@@ -133,6 +133,57 @@ def U11C_1step(dV, x0, p0, dt):
 
     return x1, p1
 
+def evolveC(option, t0, x0, p0, dt, steps, dV, dV2=None):
+    '''
+    Evolution for classical dynamics
+    input: - option: U3, RK4, U7, U72, or U11 algorithm
+           - t0: Starting time
+           - x0: Starting position
+           - p0: Starting momentum
+           - dt: Size of timestep
+           - steps: Number of steps forward
+           - dV: Function for first derivative of potential energy
+           - dV2: Function for second derivative of potential energy (optional)
+    output: - tlist: List of time
+            - xlist: List of position
+            - plist: List of momentum
+    '''
+    if option=="U7" and dV2==None:
+        raise ValueError("Second derivative is needed for U7")
+    if type(x0) == type(1) or type(x0) == type(1.):
+        dim = 1
+    else:
+        dim = len(x0) # Dimension of the system
+
+    xlist = np.zeros((steps+1, dim))
+    plist = np.zeros((steps+1, dim))
+    tlist = np.zeros(steps+1)
+    
+    xlist[0] = np.array(x0)
+    plist[0] = np.array(p0)
+    tlist[0] = t0
+
+    for i in range(1, steps+1):
+        if option == "U3":
+            x1, p1 = U3C_1step(dV, xlist[i-1], plist[i-1], dt)
+        elif option == "RK4":
+            x1, p1 = RK4C_1step(dV, xlist[i-1], plist[i-1], dt)
+        elif option == "U7":
+            x1, p1 = U7C_1step(dV, dV2, xlist[i-1], plist[i-1], dt)
+        elif option == "U72":
+            x1, p1 = U72C_1step(dV, xlist[i-1], plist[i-1], dt)
+        elif option == "U11":
+            x1, p1 = U11C_1step(dV, xlist[i-1], plist[i-1], dt)
+        else:
+            raise ValueError("Option is not valid")
+        xlist[i] = x1
+        plist[i] = p1
+        tlist[i] = tlist[i-1] + dt
+
+    return np.array(tlist), np.array(xlist), np.array(plist)
+
+
+
 if __name__=="__main__":
     def V(x):
         return 1/2*np.array(x)**2
@@ -141,11 +192,15 @@ if __name__=="__main__":
         return np.array(x)
 
     def dV2(x):
+        # return 1
         return [[1, 0],[0, 1]]
 
-    print(U7C_1step(dV, dV2, [1,1], [1,0], 0.1))
-    print(RK4C_1step(dV, [1,1], [1,0], 0.1))
-    print(U3C_1step(dV, [1,1], [1,0], 0.1))
-    print(U72C_1step(dV, [1,1], [1,0], 0.1))
-    print(U11C_1step(dV, [1,1], [1,0], 0.1))
-    # print(RK4C_2d_1step(dV2, [1,1], [1,0], 0.1))
+    x0 = [1,1]
+    p0 = [-1,0]
+    resU3 = evolveC("U3", 0, x0, p0, 0.01, 100, dV)
+    resRK4 = evolveC("RK4", 0, x0, p0, 0.01, 100, dV)
+    resU7 = evolveC("U7", 0, x0, p0, 0.01, 100, dV, dV2)
+    plt.plot(resU3[1][:,0],resU3[1][:,1])
+    plt.plot(resRK4[1][:,0],resRK4[1][:,1])
+    plt.plot(resU7[1][:,0],resU7[1][:,1])
+    plt.show()
