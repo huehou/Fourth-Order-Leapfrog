@@ -182,6 +182,57 @@ def evolveC(option, t0, x0, p0, dt, steps, dV, dV2=None):
 
     return np.array(tlist), np.array(xlist), np.array(plist)
 
+# ========================================
+# Basic Functions - Fourier Transforms
+# ========================================
+
+def fft(x, fun)
+    '''
+    Perform fast Fourier transform with corrected factors in 1D
+    input: - x: Position coordinates
+           - fun: Function in position space
+    output: - k: Wave number coordinates
+            - fun: Function in wave number space
+    '''
+    
+    # Normal FFT procedures
+    fun = np.fft.ifftshift(fun)
+    fun = np.fft.fft(fun)
+    fun = np.fft.fftshift(fun)
+
+    # Multiply by correcting factors
+    fun = fun * (x[1] - x[0]) / np.sqrt(2*np.pi)
+
+    # Wave number space
+    k = np.fft.fftfreq(len(x), x[1]-x[0])
+    k = np.fft.fftshift(k)
+    k = k * 2 * np.pi
+
+    return k, fun
+
+def ifft(k, fun):
+    '''
+    Perform inverse fast Fourier transform with corrected factors in 1D
+    input: - k: Wave number coordinates
+           - fun: Function in wave number space
+    output: - x: Position coordinates
+            - fun: Function in position space
+    '''
+
+    # Normal IFFT procedures
+    fun = np.fft.ifftshift(fun)
+    fun = np.fft.ifft(fun)
+    fun = np.fft.fftshift(fun)
+
+    # Multiply by correcting factors
+    fun = fun * (k[1] - k[0]) / np.sqrt(2 * np.pi) * len(k)
+
+    # Wave number space
+    x = np.fft.fftfreq(len(k), k[1]-k[0])
+    x = np.fft.fftshift(x)
+    x = x * 2 * np.pi
+
+    return x, fun
 
 
 if __name__=="__main__":
