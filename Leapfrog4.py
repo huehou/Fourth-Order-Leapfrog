@@ -234,6 +234,145 @@ def ifft(k, fun):
 
     return x, fun
 
+def fft2(X,fun):
+    '''
+    Perform fast Fourier transform with corrected factors in 2D
+    input: - X: A list of [x, y], a meshgrid of x and y of the position coordinates
+           - fun: Function in position space
+    output: - K: A list of [kx, ky], a meshgrid of kx and ky of the wave number coordinates
+            - fun: Function in wave number space
+    '''
+    #invert meshgrid
+    x = X[0][:,0]
+    y = X[1][0,:]
+    
+    # The normal fft procedure
+    fun = np.fft.ifftshift(fun)
+    fun = np.fft.fft2(fun)
+    fun = np.fft.fftshift(fun)
+    
+    # Multiply by correcting factors
+    fun = fun * (x[1]-x[0]) / np.sqrt(2*np.pi) * (y[1]-y[0]) / np.sqrt(2 * np.pi)
+
+    # Wave number space
+    kx = np.fft.fftfreq(len(x), x[1]-x[0])
+    ky = np.fft.fftfreq(len(y), y[1]-y[0])
+    kx = np.fft.fftshift(kx)
+    ky = np.fft.fftshift(ky)
+    kx = kx*2*np.pi
+    ky = ky*2*np.pi
+    
+    # Form meshgrid
+    kX, kY = np.meshgrid(kx, ky, indexing = 'ij')
+    
+    return [kX, kY], fun
+
+def ifft2(K,fun):
+    '''
+    Perform inverse fast Fourier transform with corrected factors in 2D
+    input: - K: A list of [kx, ky], a meshgrid of kx and ky of the wave number coordinates
+            - fun: Function in wave number space
+    output: - X: A list of [x, y], a meshgrid of x and y of the position coordinates
+           - fun: Function in position space
+    '''
+    #invert meshgrid
+    kx = K[0][:,0]
+    ky = K[1][0,:]
+    
+    # The normal fft procedure
+    fun = np.fft.ifftshift(fun)
+    fun = np.fft.ifft2(fun)
+    fun = np.fft.fftshift(fun)
+
+    # Multiply by correcting factors
+    fun = fun * (kx[1]-kx[0]) / np.sqrt(2*np.pi) * (ky[1]-ky[0]) / np.sqrt(2 * np.pi) * len(kx) * len(ky)
+
+    # Get wave number space
+    x = np.fft.fftfreq(len(kx), kx[1]-kx[0])
+    y = np.fft.fftfreq(len(ky), ky[1]-ky[0])
+    x = np.fft.fftshift(x)
+    y = np.fft.fftshift(y)
+    x = x*2*np.pi
+    y = y*2*np.pi
+    
+    # Return meshgrid
+    X, Y = np.meshgrid(x, y, indexing = 'ij')
+    
+    return [X, Y], fun
+
+def fft3(X,fun):
+    '''
+    Perform fast Fourier transform with corrected factors in 3D
+    input: - X: A list of [x, y, z], a meshgrid of x, y and z of the position coordinates
+           - fun: Function in position space
+    output: - K: A list of [kx, ky, kz], a meshgrid of kx, ky, and kz of the wave number coordinates
+            - fun: Function in wave number space
+    '''
+    #invert meshgrid
+    x = X[0][:,0][:,0]
+    y = X[1][0,:][:,0]
+    z = X[2][0,:][0,:]
+    
+    # Normal fft procedure
+    fun = np.fft.ifftshift(fun)
+    fun = np.fft.fftn(fun)
+    fun = np.fft.fftshift(fun)
+
+    # Multiply by correcting factors
+    fun = fun * (x[1]-x[0]) / np.sqrt(2*np.pi) * (y[1]-y[0]) / np.sqrt(2 * np.pi) * (z[1]-z[0]) / np.sqrt(2*np.pi)
+
+    # Get wave number space
+    kx = np.fft.fftfreq(len(x), x[1]-x[0])
+    ky = np.fft.fftfreq(len(y), y[1]-y[0])
+    kz = np.fft.fftfreq(len(z), z[1]-z[0])
+    kx = np.fft.fftshift(kx)
+    ky = np.fft.fftshift(ky)
+    kz = np.fft.fftshift(kz)
+    kx = kx*2*np.pi
+    ky = ky*2*np.pi
+    kz = kz*2*np.pi
+    
+    # Return meshgrid
+    kX, kY, kZ = np.meshgrid(kx, ky, kz, indexing = 'ij')
+    
+    return [kX, kY, kZ], fun
+
+def ifft3(K,fun):
+    '''
+    Perform inverse fast Fourier transform with corrected factors in 3D
+    input: - K: A list of [kx, ky, kz], a meshgrid of kx, ky and kz of the wave number coordinates
+            - fun: Function in wave number space
+    output: - X: A list of [x, y, z], a meshgrid of x, y and z of the position coordinates
+           - fun: Function in position space
+    '''
+    #invert meshgrid
+    kx = K[0][:,0][:,0]
+    ky = K[1][0,:][:,0]
+    kz = K[2][0,:][0,:]
+    
+    # Normal ifft procedure
+    fun = np.fft.ifftshift(fun)
+    fun = np.fft.ifftn(fun)
+    fun = np.fft.fftshift(fun)
+
+    # Multiply by correcting factors
+    fun = fun * (kx[1]-kx[0]) / np.sqrt(2*np.pi) * (ky[1]-ky[0]) / np.sqrt(2 * np.pi) * (kz[1]-kz[0]) / np.sqrt(2 * np.pi) * len(kx) * len(ky) * len(kz)
+
+    # Get wave number space
+    x = np.fft.fftfreq(len(kx), kx[1]-kx[0])
+    y = np.fft.fftfreq(len(ky), ky[1]-ky[0])
+    z = np.fft.fftfreq(len(kz), kz[1]-kz[0])
+    x = np.fft.fftshift(x)
+    y = np.fft.fftshift(y)
+    z = np.fft.fftshift(z)
+    x = x*2*np.pi
+    y = y*2*np.pi
+    z = z*2*np.pi
+    
+    # Return meshgrid
+    X, Y, Z = np.meshgrid(x, y, z, indexing = 'ij')
+    
+    return [X, Y, Z], fun
 
 if __name__=="__main__":
     def V(x):
