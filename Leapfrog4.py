@@ -6,9 +6,9 @@ import scipy.interpolate as inter
 from mpl_toolkits.mplot3d import Axes3D
 import os
 
-# =====================================
+# ============================
 # Basic Functions - Classical
-# =====================================
+# ============================
 
 def U3C_1step(dV, x0, p0, dt):
     '''
@@ -373,6 +373,333 @@ def ifft3(K,fun):
     X, Y, Z = np.meshgrid(x, y, z, indexing = 'ij')
     
     return [X, Y, Z], fun
+
+===========================
+Basic Functions - Quantum
+===========================
+
+def U3Q_1d_1step(V, X, psi0, dt):
+    '''
+    One step of U3 for 1D quantum dynamics
+    input: - V: Function for potential energy
+           - X: Position space
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Position space
+            - psi1: Wave function after 1 step
+    '''
+    psi1 = psi0 * np.exp(-1j*dt*V(X)/2)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/2)
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)/2)
+
+    return X, psi1
+
+def U3Q_2d_1step(V, X, psi0, dt):
+    '''
+    One step of U3 for 2D quantum dynamics
+    input: - V: Function for potential energy
+           - X: Space meshgrid
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+    psi1 = psi0 * np.exp(-1j*dt*V(X[0], X[1])/2)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/2)
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1])/2)
+
+    return X, psi1
+
+def U3Q_3d_1step(V, X, psi0, dt):
+    '''
+    One step of U3 for 3D quantum dynamics
+    input: - V: Function for potential energy
+           - X: Space meshgrid
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+    psi1 = psi0 * np.exp(-1j*dt*V(X[0], X[1], X[2])/2)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/2)
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])/2)
+
+    return X, psi1
+
+def U7Q_1d_1step(V, dV, X, psi0, dt):
+    '''
+    One step of U7 for 1D quantum dynamics
+    input: - V: Function for potential energy
+           - dV: Function for first derivative of potential energy
+           - X: Space
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+    psi1 = psi0 * np.exp(-1j*dt*V(X)/6)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/4)
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(V(X)*2/3 - 1/72*(dt*dV(X))**2))
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/4)
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)/6)
+
+    return X, psi1
+
+def U7Q_2d_1step(V, dV, X, psi0, dt):
+    '''
+    One step of U7 for 2D quantum dynamics
+    input: - V: Function for potential energy
+           - dV: Function for first derivative of potential energy
+           - X: Space meshgrid
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+    psi1 = psi0 * np.exp(-1j*dt*V(X[0],X[1])/6)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/4)
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(V(X[0],X[1])*2/3 - 1/72*(dt**2)*(dV[0](X[0],X[1])**2 + dV[1](X[0],X[1])**2)))
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/4)
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0],X[1])/6)
+
+    return X, psi1
+
+def U7Q_3d_1step(V, dV, X, psi0, dt):
+    '''
+    One step of U7 for 3D quantum dynamics
+    input: - V: Function for potential energy
+           - dV: Function for first derivative of potential energy
+           - X: Space meshgrid
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+    psi1 = psi0 * np.exp(-1j*dt*V(X[0],X[1],X[2])/6)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/4)
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(V(X[0],X[1],X[2])*2/3 - 1/72*(dt**2)*(dV[0](X[0],X[1],X[2])**2 + dV[1](X[0],X[1],X[2])**2 +dV[2](X[0],X[1],X[2])**2)))
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/4)
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0],X[1],X[2])/6)
+
+    return X, psi1
+
+def U72Q_1d_1step(V, X, psi0, dt):
+    '''
+    One step of U7' for 1D quantum dynamics
+    input: - V: Function for potential energy
+           - X: Space
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+
+    s = 1/(2 - 2**(1/3))
+
+    psi1 = psi0 * np.exp(-1j*dt*V(X)*s/2)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/2*s)
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)*(1-s)/2)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/2*(1-2*s))
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)*(1-s)/2)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/2*s)
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)*s/2)
+
+    return X, psi1
+
+def U72Q_2d_1step(self, X, psi0, dt):
+    '''
+    One step of U7' for 2D quantum dynamics
+    input: - V: Function for potential energy
+           - X: Space
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+
+    s = 1/(2 - 2**(1/3))
+
+    psi1 = psi0 * np.exp(-1j*dt*V(X[0], X[1])*s/2)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/2*s)
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1])*(1-s)/2)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/2*(1-2*s))
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1])*(1-s)/2)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/2*s)
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1])*s/2)
+
+    return X, psi1
+
+def U72Q_3d_1step(self, X, psi0, dt):
+    '''
+    One step of U7' for 3D quantum dynamics
+    input: - V: Function for potential energy
+           - X: Space
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+
+    s = 1/(2 - 2**(1/3))
+
+    psi1 = psi0 * np.exp(-1j*dt*V(X[0], X[1], X[2])*s/2)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/2*s)
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])*(1-s)/2)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/2*(1-2*s))
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])*(1-s)/2)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/2*s)
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])*s/2)
+
+    return X, psi1
+
+def U11Q_1d_1step(self, X, psi0, dt):
+    '''
+    One step of U11 for 1D quantum dynamics
+    input: - V: Function for potential energy
+           - X: Space
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+
+    s = 1/(4 - 4**(1/3))
+
+    psi1 = psi0 * np.exp(-1j*dt*V(X)*s/2)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/2*s)
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)*s)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/2*s)
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)*(1-3*s)/2)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/2*(1-4*s))
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)*(1-3*s)/2)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/2*s)
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)*s)
+    P, psi1 = fft(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*P**2/2*s)
+    X, psi1 = ifft(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X)*s/2)
+
+    return X, psi1
+
+def U11Q_2d_1step(self, X, psi0, dt):
+    '''
+    One step of U11 for 2D quantum dynamics
+    input: - V: Function for potential energy
+           - X: Space
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+
+    s = 1/(4 - 4**(1/3))
+
+    psi1 = psi0 * np.exp(-1j*dt*V(X[0], X[1])*s/2)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/2*s)
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1])*s)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/2*s)
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1])*(1-3*s)/2)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/2*(1-4*s))
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1])*(1-3*s)/2)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/2*s)
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1])*s)
+    P, psi1 = fft2(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2)/2*s)
+    X, psi1 = ifft2(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1])*s/2)
+
+    return X, psi1
+
+def U11Q_3d_1step(self, X, psi0, dt):
+    '''
+    One step of U11 for 3D quantum dynamics
+    input: - V: Function for potential energy
+           - X: Space
+           - psi0: Initial wave function
+           - dt: Timestep
+    output: - X: Space
+            - psi1: Wave function after 1 step
+    '''
+
+    s = 1/(4 - 4**(1/3))
+
+    psi1 = psi0 * np.exp(-1j*dt*V(X[0], X[1], X[2])*s/2)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/2*s)
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])*s)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/2*s)
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])*(1-3*s)/2)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/2*(1-4*s))
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])*(1-3*s)/2)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/2*s)
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])*s)
+    P, psi1 = fft3(X, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*(P[0]**2+P[1]**2+P[2]**2)/2*s)
+    X, psi1 = ifft3(P, psi1)
+    psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])*s/2)
+
+    return X, psi1
+
+    
 
 if __name__=="__main__":
     def V(x):
