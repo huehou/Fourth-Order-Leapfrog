@@ -10,13 +10,13 @@ import os
 # Basic Functions - Classical
 # ============================
 
-def U3C_1step(dV, x0, p0, dt):
+def U3C_1step(x0, p0, dt, dV):
     '''
     One step of standard leapfrog method for classical dynamics
-    input: - dV: Function for first derivative of potential energy
-           - x0: Starting position
+    input: - x0: Starting position
            - p0: Starting momentum
            - dt: Size of timestep
+           - dV: Function for first derivative of potential energy
     output: - x1: New position after one step
             - p1: New momentum after one step
     '''
@@ -29,13 +29,13 @@ def U3C_1step(dV, x0, p0, dt):
 
     return x1, p1
 
-def RK4C_1step(dV, x0, p0, dt):
+def RK4C_1step(x0, p0, dt, dV):
     '''
     One step of 4th-order Runge-Kutta method for classical dynamics
-    input: - dV: Function for first derivative of potential energy
-           - x0: Starting position
+    input: - x0: Starting position
            - p0: Starting momentum
            - dt: Size of timestep
+           - dV: Function for first derivative of potential energy
     output: - x1: New position after one step
             - p1: New momentum after one step
     '''
@@ -59,14 +59,14 @@ def RK4C_1step(dV, x0, p0, dt):
     
     return x1, p1
 
-def U7C_1step(dV, dV2, x0, p0, dt):
+def U7C_1step(x0, p0, dt, dV, dV2):
     '''
     One step of 4th-order leapfrog method for classical dynamics
-    input: - dV: Function for first derivative of potential energy
-           - dV2: Function for second derivative of potential energy
-           - x0: Starting position
+    input: - x0: Starting position
            - p0: Starting momentum
            - dt: Size of timestep
+           - dV: Function for first derivative of potential energy
+           - dV2: Function for second derivative of potential energy
     output: - x1: New position after one step
             - p1: New momentum after one step
     '''
@@ -81,13 +81,13 @@ def U7C_1step(dV, dV2, x0, p0, dt):
     
     return x1, p1
 
-def U72C_1step(dV, x0, p0, dt):
+def U72C_1step(x0, p0, dt, dV):
     '''
     One step of U7' method for classical dynamics
-    input: - dV: Function for first derivative of potential energy
-           - x0: Starting position
+    input: - x0: Starting position
            - p0: Starting momentum
            - dt: Size of timestep
+           - dV: Function for first derivative of potential energy
     output: - x1: New position after one step
             - p1: New momentum after one step
     '''
@@ -105,13 +105,13 @@ def U72C_1step(dV, x0, p0, dt):
 
     return x1, p1
 
-def U11C_1step(dV, x0, p0, dt):
+def U11C_1step(x0, p0, dt, dV):
     '''
     One step of U11 method for classical dynamics 
-    input: - dV: Function for first derivative of potential energy
-           - x0: Starting position
+    input: - x0: Starting position
            - p0: Starting momentum
            - dt: Size of timestep
+           - dV: Function for first derivative of potential energy
     output: - x1: New position after one step
             - p1: New momentum after one step
     '''
@@ -165,15 +165,15 @@ def evolveC(option, t0, x0, p0, dt, steps, dV, dV2=None):
 
     for i in range(1, steps+1):
         if option == "U3":
-            x1, p1 = U3C_1step(dV, xlist[i-1], plist[i-1], dt)
+            x1, p1 = U3C_1step(xlist[i-1], plist[i-1], dt, dV)
         elif option == "RK4":
-            x1, p1 = RK4C_1step(dV, xlist[i-1], plist[i-1], dt)
+            x1, p1 = RK4C_1step(xlist[i-1], plist[i-1], dt, dV)
         elif option == "U7":
-            x1, p1 = U7C_1step(dV, dV2, xlist[i-1], plist[i-1], dt)
+            x1, p1 = U7C_1step(xlist[i-1], plist[i-1], dt, dV, dV2)
         elif option == "U72":
-            x1, p1 = U72C_1step(dV, xlist[i-1], plist[i-1], dt)
+            x1, p1 = U72C_1step(xlist[i-1], plist[i-1], dt, dV)
         elif option == "U11":
-            x1, p1 = U11C_1step(dV, xlist[i-1], plist[i-1], dt)
+            x1, p1 = U11C_1step(xlist[i-1], plist[i-1], dt, dV)
         else:
             raise ValueError("Option is not valid")
         xlist[i] = x1
@@ -378,13 +378,13 @@ def ifft3(K,fun):
 Basic Functions - Quantum
 ===========================
 
-def U3Q_1d_1step(V, X, psi0, dt):
+def U3Q_1d_1step(X, psi0, dt, V):
     '''
     One step of U3 for 1D quantum dynamics
-    input: - V: Function for potential energy
-           - X: Position space
+    input: - X: Position space
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
     output: - X: Position space
             - psi1: Wave function after 1 step
     '''
@@ -396,13 +396,13 @@ def U3Q_1d_1step(V, X, psi0, dt):
 
     return X, psi1
 
-def U3Q_2d_1step(V, X, psi0, dt):
+def U3Q_2d_1step(X, psi0, dt, V):
     '''
     One step of U3 for 2D quantum dynamics
-    input: - V: Function for potential energy
-           - X: Space meshgrid
+    input: - X: Space meshgrid
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -414,13 +414,13 @@ def U3Q_2d_1step(V, X, psi0, dt):
 
     return X, psi1
 
-def U3Q_3d_1step(V, X, psi0, dt):
+def U3Q_3d_1step(X, psi0, dt, V):
     '''
     One step of U3 for 3D quantum dynamics
-    input: - V: Function for potential energy
-           - X: Space meshgrid
+    input: - X: Space meshgrid
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -432,14 +432,14 @@ def U3Q_3d_1step(V, X, psi0, dt):
 
     return X, psi1
 
-def U7Q_1d_1step(V, dV, X, psi0, dt):
+def U7Q_1d_1step(X, psi0, dt, V, dV):
     '''
     One step of U7 for 1D quantum dynamics
-    input: - V: Function for potential energy
-           - dV: Function for first derivative of potential energy
-           - X: Space
+    input: - X: Space
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
+           - dV: Function for first derivative of potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -455,14 +455,14 @@ def U7Q_1d_1step(V, dV, X, psi0, dt):
 
     return X, psi1
 
-def U7Q_2d_1step(V, dV, X, psi0, dt):
+def U7Q_2d_1step(X, psi0, dt, V, dV):
     '''
     One step of U7 for 2D quantum dynamics
-    input: - V: Function for potential energy
-           - dV: Function for first derivative of potential energy
-           - X: Space meshgrid
+    input: - X: Space meshgrid
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
+           - dV: Function for first derivative of potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -478,14 +478,14 @@ def U7Q_2d_1step(V, dV, X, psi0, dt):
 
     return X, psi1
 
-def U7Q_3d_1step(V, dV, X, psi0, dt):
+def U7Q_3d_1step(X, psi0, dt, V, dV):
     '''
     One step of U7 for 3D quantum dynamics
-    input: - V: Function for potential energy
-           - dV: Function for first derivative of potential energy
-           - X: Space meshgrid
+    input: - X: Space meshgrid
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
+           - dV: Function for first derivative of potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -501,13 +501,13 @@ def U7Q_3d_1step(V, dV, X, psi0, dt):
 
     return X, psi1
 
-def U72Q_1d_1step(V, X, psi0, dt):
+def U72Q_1d_1step(X, psi0, dt, V):
     '''
     One step of U7' for 1D quantum dynamics
-    input: - V: Function for potential energy
-           - X: Space
+    input: - X: Space
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -530,13 +530,13 @@ def U72Q_1d_1step(V, X, psi0, dt):
 
     return X, psi1
 
-def U72Q_2d_1step(self, X, psi0, dt):
+def U72Q_2d_1step(X, psi0, dt, V):
     '''
     One step of U7' for 2D quantum dynamics
-    input: - V: Function for potential energy
-           - X: Space
+    input: - X: Space
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -559,13 +559,13 @@ def U72Q_2d_1step(self, X, psi0, dt):
 
     return X, psi1
 
-def U72Q_3d_1step(self, X, psi0, dt):
+def U72Q_3d_1step(X, psi0, dt, V):
     '''
     One step of U7' for 3D quantum dynamics
-    input: - V: Function for potential energy
-           - X: Space
+    input: - X: Space
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -588,13 +588,13 @@ def U72Q_3d_1step(self, X, psi0, dt):
 
     return X, psi1
 
-def U11Q_1d_1step(self, X, psi0, dt):
+def U11Q_1d_1step(X, psi0, dt, V):
     '''
     One step of U11 for 1D quantum dynamics
-    input: - V: Function for potential energy
-           - X: Space
+    input: - X: Space
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -625,13 +625,13 @@ def U11Q_1d_1step(self, X, psi0, dt):
 
     return X, psi1
 
-def U11Q_2d_1step(self, X, psi0, dt):
+def U11Q_2d_1step(X, psi0, dt, V):
     '''
     One step of U11 for 2D quantum dynamics
-    input: - V: Function for potential energy
-           - X: Space
+    input: - X: Space
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -662,13 +662,13 @@ def U11Q_2d_1step(self, X, psi0, dt):
 
     return X, psi1
 
-def U11Q_3d_1step(self, X, psi0, dt):
+def U11Q_3d_1step(X, psi0, dt, V):
     '''
     One step of U11 for 3D quantum dynamics
-    input: - V: Function for potential energy
-           - X: Space
+    input: - X: Space
            - psi0: Initial wave function
            - dt: Timestep
+           - V: Function for potential energy
     output: - X: Space
             - psi1: Wave function after 1 step
     '''
@@ -698,6 +698,260 @@ def U11Q_3d_1step(self, X, psi0, dt):
     psi1 = psi1 * np.exp(-1j*dt*V(X[0], X[1], X[2])*s/2)
 
     return X, psi1
+
+def evolveQ_1d(option, t0, x, psi0, dt, steps, V, dV=None):
+    '''
+    Evolution for 1D quantum dynamics
+    input: - option: U3, U7, U72, U11 algorithms
+           - t0: Starting time
+           - x: Position space
+           - psi0: Starting wave function
+           - dt: Size of timesteps
+           - steps: Number of steps forward
+           - V: Function for the potential energy
+           - dV: Function for the first derivative of the potential energy
+    output: - tlist: List of time
+            - x: Position space
+            - pslist: Evolving wave functions
+    '''
+    # Initialise containers for results
+    psilist = np.zeros([steps+1, len(psi0)], dtype = complex)
+    tlist = np.zeros(steps+1)
+    psilist[0] = psi0
+    tlist[0] = t0
+
+    for i in range(1, steps+1):
+        if option == "U3":
+            x, psi1 = U3Q_1d_1step(x, psilist[i-1], dt, V)
+        elif option == "U7":
+            x, psi1 = U7Q_1d_1step(x, psilist[i-1], dt, V, dV)
+        elif option == "U72":
+            x, psi1 = U72Q_1d_1step(x, psilist[i-1], dt, V)
+        elif option == "U11":
+            x, psi1 = U11Q_1d_1step(x, psilist[i-1], dt, V)
+        else:
+            raise ValueError("Option is not supported... yet")
+
+        tlist[i] = tlist[i-1] + dt
+        psilist[i] = psi1
+
+    return tlist, x, np.array(psilist)
+
+def evolveQ_2d(option, t0, X, psi0, dt, steps, V, dV=None):
+    '''
+    Evolution for 2D quantum dynamics
+    input: - option: U3, U7, U72, U11 algorithms
+           - t0: Starting time
+           - X: Position space
+           - psi0: Starting wave function
+           - dt: Size of timesteps
+           - steps: Number of steps forward
+           - V: Function for the potential energy
+           - dV: Function for the first derivative of the potential energy
+    output: - tlist: List of time
+            - X: Position space
+            - pslist: Evolving wave functions
+    '''
+
+    # Initialise containers for results
+    dim = np.shape(psi0)
+    psilist = np.zeros([steps+1, dim[0], dim[1]], dtype = complex)
+    tlist = np.zeros(steps+1)
+    psilist[0] = psi0
+    tlist[0] = t0
+
+    for i in range(1, steps+1):
+        if option == "U3":
+            X, psi1 = U3Q_2d_1step(X, psilist[i-1], dt, V)
+        elif option == "U7":
+            X, psi1 = U7Q_2d_1step(X, psilist[i-1], dt, V, dV)
+        elif option == "U72":
+            X, psi1 = U72Q_2d_1step(X, psilist[i-1], dt, V)
+        elif option == "U11":
+            X, psi1 = U11Q_2d_1step(X, psilist[i-1], dt, V)
+        else:
+            raise ValueError("Option is not supported... yet")
+
+        tlist[i] = tlist[i-1] + dt
+        psilist[i] = psi1
+
+    return tlist, X, np.array(psilist)
+
+def evolveQ_3d(option, t0, X, psi0, dt, steps, V, dV=None):
+    '''
+    Evolution for 3D quantum dynamics
+    input: - option: U3, U7, U72, U11 algorithms
+           - t0: Starting time
+           - X: Position space
+           - psi0: Starting wave function
+           - dt: Size of timesteps
+           - steps: Number of steps forward
+           - V: Function for the potential energy
+           - dV: Function for the first derivative of the potential energy
+    output: - tlist: List of time
+            - X: Position space
+            - pslist: Evolving wave functions
+    '''
+
+    # Initialise containers for results
+    dim = np.shape(psi0)
+    psilist = np.zeros([steps+1, dim[0], dim[1], dim[2]], dtype = complex)
+    tlist = np.zeros(steps+1)
+    psilist[0] = psi0
+    tlist[0] = t0
+
+    for i in range(1, steps+1):
+        if option == "U3":
+            X, psi1 = U3Q_3d_1step(X, psilist[i-1], dt, V)
+        elif option == "U7":
+            X, psi1 = U7Q_3d_1step(X, psilist[i-1], dt, V, dV)
+        elif option == "U72":
+            X, psi1 = U72Q_3d_1step(X, psilist[i-1], dt, V)
+        elif option == "U11":
+            X, psi1 = U11Q_3d_1step(X, psilist[i-1], dt, V)
+        else:
+            raise ValueError("Option is not supported... yet")
+
+        tlist[i] = tlist[i-1] + dt
+        psilist[i] = psi1
+
+    return tlist, X, np.array(psilist)
+
+def evolveQ_3d_ext(option, t0, X, psi0, dt, steps, V, dV=None):
+    '''
+    Evolution for 3D quantum dynamics with external memory
+    input: - option: U3, RK4, U7 algorithms
+           - t0: Starting time
+           - X: Position space
+           - psi0: Starting wave function
+           - dt: Size of timesteps
+           - steps: Number of steps forward
+           - V: Function for the potential energy
+           - dV: Function for the first derivative of the potential energy
+    output: - tlist: List of time
+            - X: Position space
+            - psilist: Evolving wave functions
+    '''
+    dirname = input("Input directory to store wave functions (default is ./temp):")
+    if not name:
+        name = "./temp"
+
+    # Initialise containers for results
+    if not os.path.isdir(name):
+        os.mkdir(name)
+
+    psilist = ["0" for i in range(steps+1)]
+    tlist = np.zeros(steps+1)
+    filename = name+"/temp"+option+"_0.dat"
+    np.save(filename, psi0)
+    psilist[0] = filename
+    tlist[0] = t0
+    psi1 = psi0
+
+    for i in range(1, steps+1):
+        if option == "U3":
+            X, psi1 = U3Q_3d_1step(X, psi1, dt, V)
+        elif option == "U7":
+            X, psi1 = U7Q_3d_1step(X, psi1, dt, V, dV)
+        elif option == "U72":
+            X, psi1 = U72Q_3d_1step(X, psilist[i-1], dt, V)
+        elif option == "U11":
+            X, psi1 = U11Q_3d_1step(X, psilist[i-1], dt, V)
+        else:
+            raise ValueError("Option is not supported... yet")
+
+        filename = name+"/temp"+option+"_"+str(i)+".dat"
+        np.save(filename, psi1)
+        tlist[i] = tlist[i-1] + dt
+        psilist[i] = filename
+        print(filename + " done")
+        print(psi1)
+
+    return tlist, X, psilist
+
+# =========================
+# Convenience - Classical
+# =========================
+
+def U3C(t0, x0, p0, dt, steps, dV):
+    '''
+    U3 Evolution for classical dynamics
+    input: - t0: Starting time
+           - x0: Starting position
+           - p0: Starting momentum
+           - dt: Size of timestep
+           - steps: Number of steps forward
+           - dV: Function for first derivative of potential energy
+    output: - tlist: List of time
+            - xlist: List of position
+            - plist: List of momentum
+    '''
+    return evolveC("U3", t0, x0, p0, dt, steps, dV)
+
+def RK4C(t0, x0, p0, dt, steps, dV):
+    '''
+    RK4 Evolution for classical dynamics
+    input: - t0: Starting time
+           - x0: Starting position
+           - p0: Starting momentum
+           - dt: Size of timestep
+           - steps: Number of steps forward
+           - dV: Function for first derivative of potential energy
+    output: - tlist: List of time
+            - xlist: List of position
+            - plist: List of momentum
+    '''
+    return evolveC("RK4", t0, x0, p0, dt, steps, dV)
+
+def U72C(t0, x0, p0, dt, steps, dV):
+    '''
+    U72 Evolution for classical dynamics
+    input: - t0: Starting time
+           - x0: Starting position
+           - p0: Starting momentum
+           - dt: Size of timestep
+           - steps: Number of steps forward
+           - dV: Function for first derivative of potential energy
+    output: - tlist: List of time
+            - xlist: List of position
+            - plist: List of momentum
+    '''
+    return evolveC("U72", t0, x0, p0, dt, steps, dV)
+
+def U11C(t0, x0, p0, dt, steps, dV):
+    '''
+    U11 Evolution for classical dynamics
+    input: - t0: Starting time
+           - x0: Starting position
+           - p0: Starting momentum
+           - dt: Size of timestep
+           - steps: Number of steps forward
+           - dV: Function for first derivative of potential energy
+    output: - tlist: List of time
+            - xlist: List of position
+            - plist: List of momentum
+    '''
+    return evolveC("U11", t0, x0, p0, dt, steps, dV)
+
+def U7C(t0, x0, p0, dt, steps, dV, dV2):
+    '''
+    U7 Evolution for classical dynamics
+    input: - t0: Starting time
+           - x0: Starting position
+           - p0: Starting momentum
+           - dt: Size of timestep
+           - steps: Number of steps forward
+           - dV: Function for first derivative of potential energy
+    output: - tlist: List of time
+            - xlist: List of position
+            - plist: List of momentum
+    '''
+    return evolveC("U7", t0, x0, p0, dt, steps, dV)
+
+# =======================
+# Convenience - Quantum
+# =======================
+
 
     
 
