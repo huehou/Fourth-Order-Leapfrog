@@ -186,7 +186,7 @@ def evolveC(option, t0, x0, p0, dt, steps, dV, dV2=None):
 # Basic Functions - Fourier Transforms
 # ========================================
 
-def fft(x, fun)
+def fft(x, fun):
     '''
     Perform fast Fourier transform with corrected factors in 1D
     input: - x: Position coordinates
@@ -374,9 +374,9 @@ def ifft3(K,fun):
     
     return [X, Y, Z], fun
 
-===========================
-Basic Functions - Quantum
-===========================
+# ===========================
+# Basic Functions - Quantum
+# ===========================
 
 def U3Q_1d_1step(X, psi0, dt, V):
     '''
@@ -946,12 +946,122 @@ def U7C(t0, x0, p0, dt, steps, dV, dV2):
             - xlist: List of position
             - plist: List of momentum
     '''
-    return evolveC("U7", t0, x0, p0, dt, steps, dV)
+    return evolveC("U7", t0, x0, p0, dt, steps, dV, dV2)
 
 # =======================
 # Convenience - Quantum
 # =======================
 
+def U3Q(t0, X, psi0, dt, steps, V, extbool = False):
+    '''
+    U3 Evolution for quantum dynamics
+    input: - t0: Starting time
+           - X: Position space
+           - psi0: Initial wave function
+           - dt: Size of timestep
+           - steps: Number of steps
+           - V: Function for potential energy
+    output: - tlist: List of time
+            - X: Position space
+            - psilist: List of evolved wave functions
+    '''
+    dim = np.shape(psi0)
+
+    if len(dim) == 1:
+        return evolveQ_1d("U3", t0, X, psi0, dt, steps, V)
+    elif len(dim) == 2:
+        return evolveQ_2d("U3", t0, X, psi0, dt, steps, V)
+    elif len(dim) == 3:
+        if extbool == False:
+            return evolveQ_3d("U3", t0, X, psi0, dt, steps, V)
+        else:
+            return evolveQ_3d_ext("U3", t0, X, psi0, dt, steps, V)
+    else:
+        raise ValueError("Dimension not supported")
+
+def U7Q(t0, X, psi0, dt, steps, V, dV, extbool = False):
+    '''
+    U7 Evolution for quantum dynamics
+    input: - t0: Starting time
+           - X: Position space
+           - psi0: Initial wave function
+           - dt: Size of timestep
+           - steps: Number of steps
+           - V: Function for potential energy
+           - dV: Function for the first derivative of the potential energy
+    output: - tlist: List of time
+            - X: Position space
+            - psilist: List of evolved wave functions
+    '''
+    dim = np.shape(psi0)
+
+    if len(dim) == 1:
+        return evolveQ_1d("U7", t0, X, psi0, dt, steps, V, dV)
+    elif len(dim) == 2:
+        return evolveQ_2d("U7", t0, X, psi0, dt, steps, V, dV)
+    elif len(dim) == 3:
+        if extbool == False:
+            return evolveQ_3d("U7", t0, X, psi0, dt, steps, V, dV)
+        else:
+            return evolveQ_3d_ext("U7", t0, X, psi0, dt, steps, V, dV)
+    else:
+        raise ValueError("Dimension not supported")
+
+
+def U72Q(t0, X, psi0, dt, steps, V, extbool = False):
+    '''
+    U72 Evolution for quantum dynamics
+    input: - t0: Starting time
+           - X: Position space
+           - psi0: Initial wave function
+           - dt: Size of timestep
+           - steps: Number of steps
+           - V: Function for potential energy
+    output: - tlist: List of time
+            - X: Position space
+            - psilist: List of evolved wave functions
+    '''
+    dim = np.shape(psi0)
+
+    if len(dim) == 1:
+        return evolveQ_1d("U72", t0, X, psi0, dt, steps, V)
+    elif len(dim) == 2:
+        return evolveQ_2d("U72", t0, X, psi0, dt, steps, V)
+    elif len(dim) == 3:
+        if extbool == False:
+            return evolveQ_3d("U72", t0, X, psi0, dt, steps, V)
+        else:
+            return evolveQ_3d_ext("U72", t0, X, psi0, dt, steps, V)
+    else:
+        raise ValueError("Dimension not supported")
+
+
+def U11Q(t0, X, psi0, dt, steps, V, extbool = False):
+    '''
+    U11 Evolution for quantum dynamics
+    input: - t0: Starting time
+           - X: Position space
+           - psi0: Initial wave function
+           - dt: Size of timestep
+           - steps: Number of steps
+           - V: Function for potential energy
+    output: - tlist: List of time
+            - X: Position space
+            - psilist: List of evolved wave functions
+    '''
+    dim = np.shape(psi0)
+
+    if len(dim) == 1:
+        return evolveQ_1d("U11", t0, X, psi0, dt, steps, V)
+    elif len(dim) == 2:
+        return evolveQ_2d("U11", t0, X, psi0, dt, steps, V)
+    elif len(dim) == 3:
+        if extbool == False:
+            return evolveQ_3d("U11", t0, X, psi0, dt, steps, V)
+        else:
+            return evolveQ_3d_ext("U11", t0, X, psi0, dt, steps, V)
+    else:
+        raise ValueError("Dimension not supported")
 
     
 
