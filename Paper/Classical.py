@@ -292,4 +292,58 @@ color = {
 # plt.tick_params(right = True, top = True, direction = 'in')
 # plt.ylim(5*10**(-6), 7*10**(-1))
 
+# # ========================
+# # Honeycomb potential
+# # ========================
+
+# # Potential energy
+# def V(x):
+    # return 3 + 2*np.cos(1/2 * (x[0] - np.sqrt(3)*x[1])) + 2*np.cos(1/2*(x[0] + np.sqrt(3)*x[1])) + 2*np.cos(x[0])
+
+# def dV(x):
+    # dVx = -2*np.sin(x[0]/2)*(2*np.cos(x[0]/2) + np.cos(np.sqrt(3)*x[1]/2))
+    # dVy = -2*np.sqrt(3)*np.cos(x[0]/2)*np.sin(np.sqrt(3)*x[1]/2)
+    # return np.array([dVx, dVy])
+
+# def dV2(x):
+    # dVxx = -2*np.cos(x[0]) - np.cos(x[0]/2)*np.cos(np.sqrt(3)*x[1]/2)
+    # dVyy = -3*np.cos(x[0]/2)*np.cos(np.sqrt(3)*x[1]/2)
+    # dVxy = np.sqrt(3)*np.sin(x[0]/2)*np.sin(np.sqrt(3)*x[1]/2)
+    # return np.array([[dVxx, dVxy], [dVxy, dVyy]])
+
+# # Background
+# x = np.arange(-20, 30, 0.1)
+# y = np.arange(-10, 45, 0.1)
+# X, Y = np.meshgrid(x, y, indexing = 'ij')
+# Z = V([X,Y])
+# def plotBackground():
+    # plt.contour(X, Y, Z, 7, cmap = 'viridis', alpha = 0.1)
+    # plt.gca().set_aspect('equal')
+    # plt.xlim(-20,30)
+    # return None
+# # Initial conditions
+# t0 = 0
+# x0 = np.array([0.5, 0.5])
+# p0 = np.array([0, 0])
+# T = 50
+# dtlist = [0.02, 0.01, 0.001]
+
+# for i, dt in enumerate(dtlist):
+    # steps = int(T/dt)
+    # tU3, xU3, pU3 = lf.U3C(t0, x0, p0, dt, steps, dV)
+    # tU72, xU72, pU72 = lf.U72C(t0, x0, p0, dt, steps, dV)
+    # tRK4, xRK4, pRK4 = lf.RK4C(t0, x0, p0, dt, steps, dV)
+    # tU11, xU11, pU11 = lf.U11C(t0, x0, p0, dt, steps, dV)
+    # tU7, xU7, pU7 = lf.U7C(t0, x0, p0, dt, steps, dV, dV2)
+
+    # plt.figure()
+    # plotBackground()
+    # plt.plot(xU3[:,0], xU3[:,1], color = color['U3'], label = '$U_3$')
+    # plt.plot(xU72[:,0], xU72[:,1], color = color['U72'], label = "$U_7'$")
+    # plt.plot(xRK4[:,0], xRK4[:,1], color = color['RK4'], label = 'RK4')
+    # plt.plot(xU11[:,0], xU11[:,1], color = color['U11'], label = '$U_{11}$')
+    # plt.plot(xU7[:,0], xU7[:,1], '--', color = color['U7'], label = '$U_7$')
+    # plt.tick_params(direction = "in", top = True, right = True)
+    # plt.legend(frameon = False)
+
 plt.show()
