@@ -112,144 +112,150 @@ color = {
 # plt.xlabel("period error $\epsilon_\mathrm{Q}$")
 # plt.ylabel("computation time [s]")
 
-# =====================
-# Davidson Potential
-# =====================
+# # =====================
+# # Davidson Potential
+# # =====================
 
-# Parameters
-m = 1
-omega = 1
-hbar = 1
+# # Parameters
+# mass = 1
+# omega = 1
+# hbar = 1
 
-# Potential energy
-def V(X, Y, Z):
-    res = 1/2*m*omega**2 * (X**2 + Y**2 + Z**2) + np.true_divide(hbar**2, (2*m*(X**2 + Y**2 + Z**2)))
-    res[res == np.inf] = 0
-    res = np.nan_to_num(res)
-    return res
-
-def dV(X, Y, Z):
-    dVx = m*omega**2 * X - (X*hbar)/(m*(X**2 + Y**2 + Z**2)**2)
-    dVy = m*omega**2 * Y - (Y*hbar)/(m*(X**2 + Y**2 + Z**2)**2)
-    dVz = m*omega**2 * Z - (Z*hbar)/(m*(X**2 + Y**2 + Z**2)**2)
+# # Potential energy
+# def V(X, Y, Z):
+    # res = 1/2 * mass * omega**2 * (X**2 + Y**2 + Z**2) + np.true_divide(hbar**2, (2*mass*(X**2 + Y**2 + Z**2)))
+    # araytype = type(np.array([1,2,3]))
+    # if type(X) == araytype:
+        # res[res == np.inf] = 0
+        # res = np.nan_to_num(res)
     
-    return np.array([dVx, dVy, dVz])
+    # return res
 
-x = np.linspace(-10, 10, 101)
-y = x
-z = x
-X, Y, Z = np.meshgrid(x, y, z, indexing = 'ij')
-space = [X, Y, Z]
-
-# Davidson potential eigenstates
-def basis(n, l, m, X, Y, Z):
-    R = np.sqrt(X**2 + Y**2 + Z**2)
-    Theta = np.arctan2(np.sqrt(X**2 + Y**2), Z)
-    Phi = np.arctan2(Y, X)
-    alpha = 1/4*(np.sqrt(4*l*(l+1) + 4 + 1) - 1)
-    beta = 1/2
-    gamma = 2*alpha + 1/2
-
-    res = np.exp(-R**2/2) * (R**2)**alpha + 0*1j
-    res *= special.sph_harm(m, l, Phi, Theta)
-    res *= special.eval_genlaguerre(n, 2*alpha + 1/2, R**2)
-
-    return res
-
-# Exact time evolution of Davidson bases
-def exact(n, l, m, X, Y, Z, t):
-    res = basis(n, l, m, X, Y, Z)
-    alpha = 1/4*(np.sqrt(4*l*(l+1) + 4 + 1) - 1)
-    energy = 2*n + 3/2 + 2*alpha
-    res *= np.exp(-1j*t*energy)
-
-    return res
-
-# Overlap between two wave function
-def overlap_3d(psi1, psi2, space):
-    product = np.conj(psi1)*psi2
-    # res = np.trapz(np.trapz(np.trapz(np.conj(psi1)*psi2, space[0][:,0][:,0]), space[1][0,:][:,0]), space[2][0,:][0,:])
-    res = np.trapz(np.trapz(np.trapz(product, space[0][:,0][:,0]), space[1][0,:][:,0]), space[2][0,:][0,:])
-    return res
-
-# Initial state
-n = 1
-l = 20
-m = 20
-psi0 = basis(n, l, m, X, Y, Z)
-norm = np.abs(overlap_3d(psi0, psi0, space)) # normalise wave function
-psi0 /= np.sqrt(norm)
-
-alpha = 1/4*(np.sqrt(4*l*(l+1) + 4 + 1) - 1)
-energy = 2*n + 3/2 + 2*alpha
-period = 2*np.pi/energy
-
-# Period performance
-def PeriodPerformance(option, space, psi0, dt, step, V, dV = None):
-    if option == 'U3':
-        evolve = lf.U3Q_3d_1step
-    elif option == 'U72':
-        evolve = lf.U72Q_3d_1step
-    elif option == 'RK4':
-        evolve = lf.RK4Q_3d_1step
-    elif option == 'U11':
-        evolve = lf.U11Q_3d_1step
-    elif option == 'U7':
-        evolve = lf.U7Q_3d_1step
-    else:
-        raise ValueError("Option is not supported")
+# def dV(X, Y, Z):
+    # dVx = mass*omega**2 * X - np.true_divide((X*hbar), (mass*(X**2 + Y**2 + Z**2)**2))  
+    # dVy = mass*omega**2 * Y - np.true_divide((Y*hbar), (mass*(X**2 + Y**2 + Z**2)**2))
+    # dVz = mass*omega**2 * Z - np.true_divide((Z*hbar), (mass*(X**2 + Y**2 + Z**2)**2))
+    # dVx[dVx == np.inf] = 0
+    # dVx = np.nan_to_num(dVx)
+    # dVy[dVy == np.inf] = 0
+    # dVy = np.nan_to_num(dVy)
+    # dVz[dVz == np.inf] = 0
+    # dVz = np.nan_to_num(dVz)
     
-    psi1 = psi0
+    # return np.array([dVx, dVy, dVz])
 
-    start = time.time()
-    if option != 'U7':
-        for i in range(step):
-            space, psi1 = evolve(space, psi1, dt, V)
-    else:
-        for i in range(step):
-            space, psi1 = evolve(space, psi1, dt, V, dV)
+# x = np.linspace(-10, 10, 101)
+# y = x
+# z = x
+# X, Y, Z = np.meshgrid(x, y, z, indexing = 'ij')
+# space = [X, Y, Z]
+
+# # Davidson potential eigenstates
+# def basis(n, l, m, X, Y, Z):
+    # R = np.sqrt(X**2 + Y**2 + Z**2)
+    # Theta = np.arctan2(np.sqrt(X**2 + Y**2), Z)
+    # Phi = np.arctan2(Y, X)
+    # alpha = 1/4*(np.sqrt(4*l*(l+1) + 4 + 1) - 1)
+    # beta = 1/2
+    # gamma = 2*alpha + 1/2
+
+    # res = np.exp(-R**2/2) * (R**2)**alpha + 0*1j
+    # res *= special.sph_harm(m, l, Phi, Theta)
+    # res *= special.eval_genlaguerre(n, 2*alpha + 1/2, R**2)
+
+    # return res
+
+# # Exact time evolution of Davidson bases
+# def exact(n, l, m, X, Y, Z, t):
+    # res = basis(n, l, m, X, Y, Z)
+    # alpha = 1/4*(np.sqrt(4*l*(l+1) + 4 + 1) - 1)
+    # energy = 2*n + 3/2 + 2*alpha
+    # res *= np.exp(-1j*t*energy)
+
+    # return res
+
+# # Overlap between two wave function
+# def overlap_3d(psi1, psi2, space):
+    # product = np.conj(psi1)*psi2
+    # res = np.trapz(np.trapz(np.trapz(product, space[0][:,0][:,0]), space[1][0,:][:,0]), space[2][0,:][0,:])
+    # return res
+
+# # Initial state
+# n = 1
+# l = 20
+# m = 20
+# psi0 = basis(n, l, m, X, Y, Z)
+# norm = np.abs(overlap_3d(psi0, psi0, space)) # normalise wave function
+# psi0 /= np.sqrt(norm)
+
+# period = 2*np.pi/omega * (2*n + 1 + np.sqrt((l+1/2)**2 +1))**(-1)
+
+# # Period performance
+# def PeriodPerformance(option, space, psi0, dt, step, V, dV = None):
+    # if option == 'U3':
+        # evolve = lf.U3Q_3d_1step
+    # elif option == 'U72':
+        # evolve = lf.U72Q_3d_1step
+    # elif option == 'RK4':
+        # evolve = lf.RK4Q_3d_1step
+    # elif option == 'U11':
+        # evolve = lf.U11Q_3d_1step
+    # elif option == 'U7':
+        # evolve = lf.U7Q_3d_1step
+    # else:
+        # raise ValueError("Option is not supported")
+    
+    # psi1 = psi0
+
+    # start = time.time()
+    # if option != 'U7':
+        # for i in range(step):
+            # space, psi1 = evolve(space, psi1, dt, V)
+    # else:
+        # for i in range(step):
+            # space, psi1 = evolve(space, psi1, dt, V, dV)
 
 
-    end = time.time()
+    # end = time.time()
 
-    return np.abs(overlap_3d(psi0, psi1, space)-1), end-start
+    # return np.abs(overlap_3d(psi0, psi1, space) - 1), end-start
 
-steplist = np.logspace(0, 2, 100)
-errorU3 = np.zeros(len(steplist))
-errorU72 = np.zeros(len(steplist))
-errorU11 = np.zeros(len(steplist))
-errorU7 = np.zeros(len(steplist))
-timeU3 = np.zeros(len(steplist))
-timeU72 = np.zeros(len(steplist))
-timeU11 = np.zeros(len(steplist))
-timeU7 = np.zeros(len(steplist))
+# steplist = np.logspace(0, 2, 100)
+# errorU3 = np.zeros(len(steplist))
+# errorU72 = np.zeros(len(steplist))
+# errorU11 = np.zeros(len(steplist))
+# errorU7 = np.zeros(len(steplist))
+# timeU3 = np.zeros(len(steplist))
+# timeU72 = np.zeros(len(steplist))
+# timeU11 = np.zeros(len(steplist))
+# timeU7 = np.zeros(len(steplist))
 
-for i, step in enumerate(steplist):
-    dt = period/int(step)
-    print("Progress:", int(i/len(steplist)*100))
-    errorU3[i], timeU3[i] = PeriodPerformance("U3", space, psi0, dt, int(step), V)
-    errorU72[i], timeU72[i] = PeriodPerformance("U72", space, psi0, dt, int(step), V)
-    errorU11[i], timeU11[i] = PeriodPerformance("U11", space, psi0, dt, int(step), V)
-    errorU7[i], timeU7[i] = PeriodPerformance("U7", space, psi0, dt, int(step), V, dV)
+# for i, step in enumerate(steplist):
+    # dt = period/int(step)
+    # print("Progress:", int(i/len(steplist)*100))
+    # errorU3[i], timeU3[i] = PeriodPerformance("U3", space, psi0, dt, int(step), V)
+    # errorU72[i], timeU72[i] = PeriodPerformance("U72", space, psi0, dt, int(step), V)
+    # errorU11[i], timeU11[i] = PeriodPerformance("U11", space, psi0, dt, int(step), V)
+    # errorU7[i], timeU7[i] = PeriodPerformance("U7", space, psi0, dt, int(step), V, dV)
 
-plt.loglog(errorU3, steplist, '.', markersize = 2, color = color["U3"], label = "$U_3$")
-plt.loglog(errorU72, steplist, '.', markersize = 2, color = color["U72"], label = "$U_7'$")
-plt.loglog(errorU11, steplist, '.', markersize = 2, color = color["U11"], label = "$U_{11}$")
-plt.loglog(errorU7, steplist, '.', markersize = 2, color = color["U7"], label = "$U_7$")
-plt.tick_params(direction = "in", top = True, right = True)
-plt.legend(frameon = False)
-plt.xlabel("period error $\epsilon_\mathrm{Q}$")
-plt.ylabel("number of steps $N$")
+# plt.loglog(errorU3, steplist, '.', markersize = 2, color = color["U3"], label = "$U_3$")
+# plt.loglog(errorU72, steplist, '.', markersize = 2, color = color["U72"], label = "$U_7'$")
+# plt.loglog(errorU11, steplist, '.', markersize = 2, color = color["U11"], label = "$U_{11}$")
+# plt.loglog(errorU7, steplist, '.', markersize = 6, color = color["U7"], label = "$U_7$")
+# plt.tick_params(direction = "in", top = True, right = True)
+# plt.legend(frameon = False)
+# plt.xlabel("period error $\epsilon_\mathrm{Q}$")
+# plt.ylabel("number of steps $N$")
 
-plt.figure()
-plt.loglog(errorU3, timeU3, '.', markersize = 2, color = color["U3"], label = "$U_3$")
-plt.loglog(errorU72, timeU72, '.', markersize = 2, color = color["U72"], label = "$U_7'$")
-plt.loglog(errorU11, timeU11, '.', markersize = 2, color = color["U11"], label = "$U_{11}$")
-plt.loglog(errorU7, timeU7, '.', markersize = 2, color = color["U7"], label = "$U_7$")
-plt.tick_params(direction = "in", top = True, right = True)
-plt.legend(frameon = False)
-plt.xlabel("period error $\epsilon_\mathrm{Q}$")
-plt.ylabel("computation time [s]")
+# plt.figure()
+# plt.loglog(errorU3, timeU3, '.', markersize = 2, color = color["U3"], label = "$U_3$")
+# plt.loglog(errorU72, timeU72, '.', markersize = 2, color = color["U72"], label = "$U_7'$")
+# plt.loglog(errorU11, timeU11, '.', markersize = 2, color = color["U11"], label = "$U_{11}$")
+# plt.loglog(errorU7, timeU7, '.', markersize = 6, color = color["U7"], label = "$U_7$")
+# plt.tick_params(direction = "in", top = True, right = True)
+# plt.legend(frameon = False)
+# plt.xlabel("period error $\epsilon_\mathrm{Q}$")
+# plt.ylabel("computation time [s]")
 
 
 
